@@ -1,0 +1,134 @@
+package EjercicioRopa;
+
+import java.util.Stack;
+
+public class Metodos {
+    private Stack<Prenda> pila = new Stack<>();
+
+    /**
+     * Registrar Prenda:
+     * - Si la referencia ya existe, sumar la cantidad.
+     * - Si no existe, crear una nueva prenda.
+     */
+    public void registrarPrenda(String modelo, String marca, String referencia, double precio, int cantidad) {
+        // Usamos pila auxiliar para buscar sin perder los datos
+        Stack<Prenda> aux = new Stack<>();
+        boolean existe = false;
+
+        while (!pila.isEmpty()) {
+            Prenda p = pila.pop();
+            if (p.getReferencia().equalsIgnoreCase(referencia)) {
+                // Ya existe: sumamos la cantidad a la prenda encontrada
+                p.setCantidad(p.getCantidad() + cantidad);
+                existe = true;
+            }
+            aux.push(p);
+        }
+
+        // Si no existe, creamos y agregamos la prenda nueva
+        if (!existe) {
+            Prenda nueva = new Prenda(modelo, marca, referencia, precio, cantidad);
+            aux.push(nueva);
+        }
+
+        // Restauramos la pila original
+        while (!aux.isEmpty()) {
+            pila.push(aux.pop());
+        }
+
+        System.out.println("Registro completado.");
+    }
+
+    /**
+     * Consultar Prenda (por referencia)
+     */
+    public void consultarPrenda(String referencia) {
+        // Recorremos la pila sin modificarla (for-each)
+        for (Prenda p : pila) {
+            if (p.getReferencia().equalsIgnoreCase(referencia)) {
+                System.out.println("Prenda encontrada: " + p);
+                return;
+            }
+        }
+        System.out.println("La prenda no existe.");
+    }
+
+    /**
+     * Modificar Prenda (por referencia)
+     * - Supongamos que solo cambiamos precio y cantidad.
+     */
+    public void modificarPrenda(String referencia, double nuevoPrecio, int nuevaCantidad) {
+        Stack<Prenda> aux = new Stack<>();
+        boolean modificado = false;
+
+        while (!pila.isEmpty()) {
+            Prenda p = pila.pop();
+            if (p.getReferencia().equalsIgnoreCase(referencia)) {
+                p.setPrecio(nuevoPrecio);
+                p.setCantidad(nuevaCantidad);
+                modificado = true;
+            }
+            aux.push(p);
+        }
+
+        // Restaurar la pila
+        while (!aux.isEmpty()) {
+            pila.push(aux.pop());
+        }
+
+        if (modificado) {
+            System.out.println("Prenda modificada correctamente.");
+        } else {
+            System.out.println("La prenda no existe.");
+        }
+    }
+
+    /**
+     * Vender Prenda
+     * - Se pide la cantidad a vender
+     * - Validar existencia y stock
+     */
+    public void venderPrenda(String referencia, int cantidadVender) {
+        Stack<Prenda> aux = new Stack<>();
+        boolean vendida = false;
+
+        while (!pila.isEmpty()) {
+            Prenda p = pila.pop();
+            if (p.getReferencia().equalsIgnoreCase(referencia)) {
+                if (p.getCantidad() >= cantidadVender) {
+                    p.setCantidad(p.getCantidad() - cantidadVender);
+                    vendida = true;
+                } else {
+                    System.out.println("No hay stock suficiente.");
+                }
+            }
+            aux.push(p);
+        }
+
+        // Restauramos la pila
+        while (!aux.isEmpty()) {
+            pila.push(aux.pop());
+        }
+
+        if (vendida) {
+            System.out.println("Prenda vendida correctamente.");
+        } else {
+            System.out.println("La prenda no existe o no se pudo vender.");
+        }
+    }
+
+    /**
+     * Consultar Stock: muestra todas las prendas de la pila
+     */
+    public void consultarStock() {
+        if (pila.isEmpty()) {
+            System.out.println("No hay prendas registradas.");
+            return;
+        }
+
+        System.out.println("\n--- STOCK DE PRENDAS ---");
+        for (Prenda p : pila) {
+            System.out.println(p);
+        }
+    }
+}
